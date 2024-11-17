@@ -1,5 +1,4 @@
 import { AppSidebar } from "@/components/shared/layout/AppSidebar";
-import NotFound from "@/components/shared/NotFound";
 import {
   Breadcrumb,
   BreadcrumbItem,
