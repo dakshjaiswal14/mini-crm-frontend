@@ -7,15 +7,15 @@ import { getApiUrl } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/shared/LoaderSpinner";
 import { useToast } from "@/hooks/use-toast";
 
-const emailSchema = z.string().email();
+const mobileNumberSchema = z.string().min(10, "Invalid mobile number").max(10, "Invalid mobile number");
 
 const Campaign: React.FC = () => {
   const { campaignId } = useParams<{ campaignId: string }>();
   const [campaignStats, setCampaignStats] = useState<CampaignStatsType | null>(
     null
   );
-  const [email, setEmail] = useState<string>("");
-  const [emailError, setEmailError] = useState<string | null>(null);
+  const [mobileNumber, setMobileNumber] = useState<string>("");
+  const [mobileNumberError, setMobileNumberError] = useState<string | null>(null);
   const [deliveryReceipt, setDeliveryReceipt] =
     useState<DeliveryReceiptType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -74,16 +74,16 @@ const Campaign: React.FC = () => {
     fetchCampaignStats();
   }, [campaignId, toast]);
 
-  const handleEmailSubmit = async () => {
+  const handleMobileNumberSubmit = async () => {
     // Clear previous state
-    setEmailError(null);
+    setMobileNumberError(null);
     setDeliveryReceipt(null);
 
     try {
-      // Validate email
-      const parsedEmail = emailSchema.safeParse(email);
-      if (!parsedEmail.success) {
-        setEmailError("Invalid email address");
+      // Validate mobileNumber
+      const parsedMobileNumber = mobileNumberSchema.safeParse(mobileNumber);
+      if (!parsedMobileNumber.success) {
+        setMobileNumberError("Invalid mobileNumber address");
         return;
       }
 
@@ -97,7 +97,7 @@ const Campaign: React.FC = () => {
         },
         body: JSON.stringify({
           campaignId,
-          userEmail: email,
+          mobileNumber: mobileNumber,
         }),
       });
 
@@ -124,7 +124,7 @@ const Campaign: React.FC = () => {
         variant: "success",
       });
     } catch (error) {
-      console.error("Error submitting email:", error);
+      console.error("Error submitting mobileNumber:", error);
       toast({
         title: "Error",
         description:
@@ -204,17 +204,17 @@ const Campaign: React.FC = () => {
         <h2 className="text-lg font-bold mb-2">Send Delivery Receipt</h2>
         <div className="space-y-2">
           <input
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={`border rounded p-2 w-full ${
-              emailError ? "border-red-500" : "border-gray-300"
-            }`}
+            type="text"
+            placeholder="Enter Phone number"
+            value={mobileNumber}
+            maxLength={10}
+            onChange={(e) => setMobileNumber(e.target.value)}
+            className={`border rounded p-2 w-full ${mobileNumberError ? "border-red-500" : "border-gray-300"
+              }`}
           />
-          {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
+          {mobileNumberError && <p className="text-red-500 text-sm">{mobileNumberError}</p>}
           <button
-            onClick={handleEmailSubmit}
+            onClick={handleMobileNumberSubmit}
             className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
           >
             Submit
@@ -232,11 +232,10 @@ const Campaign: React.FC = () => {
           <p>
             <strong>Status:</strong>{" "}
             <span
-              className={`font-bold ${
-                deliveryReceipt.status === "SENT"
+              className={`font-bold ${deliveryReceipt.status === "SENT"
                   ? "text-green-500"
                   : " text-red-500"
-              }`}
+                }`}
             >
               {deliveryReceipt.status}
             </span>
